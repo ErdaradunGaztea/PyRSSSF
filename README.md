@@ -17,3 +17,4 @@ Mnóstwo, dlatego jest we wczesnej fazie alpha. W miarę możliwości będą usu
 * Skrypt jest póki co dostosowany do pierwszych lig, więc nie dysponuje obsługą awansów.
 * Możliwy jest wybór jedynie pomiędzy zwycięstwem za 2 i 3 punkty, skrypt nie dysponuje obsługą innych rodzajów szablonów.
 * Skrypt oddziela nazwę zespołu od liczby meczów i reszty statystyk na podstawie przynajmniej podwójnej spacji (gdyż nierzadko pojedyncza spacja występuje w nazwie zespołu). Jeżeli nazwa zespołu jest na tyle długa, że oddzielona jest pojedynczą spacją, skrypt nie zadziała.
+* Jednocyfrowa liczba straconych bramek spowoduje wyrzucenie wyjątku albo nieprawidłowe wyniki (z powodu zapisu w postaci `00- 0`, z naciskiem na spację po myślniku).
