@@ -1,6 +1,6 @@
 import csv
 
-from entities.Competitions import competition_dictionary, CompetitionInstance
+from entities.Competitions import competition_dictionary, CompetitionInstance, Relegation, Promotion
 
 
 class Team:
@@ -21,7 +21,7 @@ class TeamDictionary:
                 if self.teams.__contains__(key):
                     self.teams.__setitem__(team, self.teams.get(key))
                     with open("teams.csv", 'a+', encoding='utf-8') as f:
-                        f.write(team + "," + self.teams.get(key).fb)
+                        f.write("{0},{1}\n".format(team, self.teams.get(key).fb))
                 else:
                     print('Key doesn\'t exist!')
             elif decision == '2':
@@ -77,6 +77,24 @@ class Table:
                     self.competitions.__setitem__(int(pos.strip()), c)
         return self
 
+    def add_relegations(self):
+        self.add_league_change(True)
+
+    def add_promotions(self):
+        self.add_league_change(False)
+
+    def add_league_change(self, down=True):
+        league = input("Provide league to {0} to. Leave empty if none to add.".format("relegate" if down else "promote"))
+        if league:
+            season = input('Provide season. Leave empty if not applicable.')
+            # notes are disabled by default, for they are unnecessary
+            # note = input('Provide note. Leave empty if not applicable.')
+            event = Relegation(league, season, None) if down else Promotion(league, season, None)
+            positions = input('Provide positions to apply this event to. If multiple, separate them by ",".')
+            positions = positions.split(",")
+            for pos in positions:
+                self.competitions.__setitem__(int(pos.strip()), event)
+
     def to_wiki(self, filename):
         with open(filename, 'a+', encoding='utf-8') as f:
             notes = []
@@ -111,10 +129,7 @@ class Table:
 
                     if competition.note:
                         notes.append(competition.note)
-                    f.write("{{{{Fb cl2 qr |rows={0:<2}|s={1} |c={2} |r={3} {4}}}}}\n".format(
-                        rows, competition.season, competition.get_name(), competition.round,
-                        "|nt={0}".format(len(notes)) if competition.note else ""
-                    ))
+                    f.write(competition.to_wiki(rows, len(notes)))
 
             wiki_notes = ""
             if len(notes) > 0:
@@ -139,6 +154,7 @@ class TableRow:
         self.points_deducted = (0, None)
         self.champions = False
         self.relegation = False
+        self.promotion = False
 
     def set_champions(self):
         self.champions = True
@@ -148,16 +164,22 @@ class TableRow:
         self.relegation = True
         return self
 
+    def set_promotion(self):
+        self.promotion = True
+        return self
+
     def deduct_points(self, points, note):
         self.points_deducted = (points, note)
         return self
 
     def to_wiki(self, color=True):
         color_wiki = "#FFFF00" if self.champions else "#FFCCCC" if self.relegation else None
-        wiki = "t={0:<25}|w={1:<2}|d={2:<2}|l={3:<2}|gf={4:<3}|ga={5:<3}{6}{7}{8}".format(
+        wiki = "t={0:<25}|w={1:<2}|d={2:<2}|l={3:<2}|gf={4:<3}|ga={5:<3}{6}{7}{8}{9}{10}".format(
             self.team.fb, self.wins, self.draws, self.losses, self.gf, self.ga,
             "|dp={0}".format(self.points_deducted[0]) if self.points_deducted[0] > 0 else "",
-            "|champion=y" if self.champions else "|relegated=y" if self.relegation else "",
+            "|champion=y" if self.champions else "",
+            "|relegated=y" if self.relegation else "",
+            "|promoted=y" if self.promotion else "",
             "|bc={0}".format(color_wiki) if color_wiki and color else ""
         )
         return wiki

@@ -20,6 +20,11 @@ class CompetitionInstance:
     def get_name(self):
         return self.competition.name
 
+    def to_wiki(self, rows, num_note):
+        return "{{{{Fb cl2 qr |rows={0:<2}|s={1} |c={2} |r={3} {4}}}}}\n".format(
+            rows, self.season, self.get_name(), self.round, "|nt={0}".format(num_note) if self.note else ""
+        )
+
 
 class CompetitionDictionary:
     def __init__(self):
@@ -43,3 +48,31 @@ with open("competitions.csv", 'r', encoding='utf-8') as f:
     for line in reader:
         d[line[0]] = Competition(line[1], line[2])
 competition_dictionary.competitions = d
+
+
+class LeagueChange:
+    def __init__(self, league, season, note=None):
+        self.league = league
+        self.season = season
+        self.note = note
+
+    def to_wiki(self, rows, num_note, event_type):
+        return "{{{{Fb cl2 qr |{0}=y |rows={1} |s={2} |c={3} {4}}}}}\n".format(
+            event_type, rows, self.season, self.league, "|nt={0}".format(num_note) if self.note else ""
+        )
+
+
+class Relegation(LeagueChange):
+    def __init__(self, league, season, note=None):
+        super().__init__(league, season, note)
+
+    def to_wiki(self, rows, num_note):
+        super().to_wiki(rows, num_note, "relegation")
+
+
+class Promotion(LeagueChange):
+    def __init__(self, league, season, note=None):
+        super().__init__(league, season, note)
+
+    def to_wiki(self, rows, num_note):
+        super().to_wiki(rows, num_note, "promotion")

@@ -40,8 +40,12 @@ def interpret(file):
                             table.standings.get(position).set_champions()
                         if line_data.__contains__('Relegated'):
                             table.standings.get(position).set_relegation()
+                        if line_data.__contains__('Promoted'):
+                            table.standings.get(position).set_promotion()
                     next_line = next(f, '')
                 table.add_competitions()
+                table.add_relegations()
+                table.add_promotions()
                 continue
             # so now we iterated over whole table
             # now let's break on encountering final table
