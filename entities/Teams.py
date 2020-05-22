@@ -19,22 +19,22 @@ class TeamDictionary:
             if decision == '1':
                 key = input('Provide key of the other entry to associate with.')
                 if self.teams.__contains__(key):
-                    self.teams.__setitem__(team, self.teams.get(key).fb)
-                    with open("teams.csv", 'a+') as f:
-                        f.write(team + "," + self.teams.get(key))
+                    self.teams.__setitem__(team, self.teams.get(key))
+                    with open("teams.csv", 'a+', encoding='utf-8') as f:
+                        f.write(team + "," + self.teams.get(key).fb)
                 else:
                     print('Key doesn\'t exist!')
             elif decision == '2':
                 fb_name = input('Provide fb name for new team.')
                 self.teams.__setitem__(team, Team(fb_name))
-                with open("teams.csv", 'a+') as f:
+                with open("teams.csv", 'a+', encoding='utf-8') as f:
                     f.write("{0},{1}\n".format(team, fb_name))
         return self.teams.get(team)
 
 
 team_dictionary = TeamDictionary()
 d = dict()
-with open("teams.csv", 'r') as f:
+with open("teams.csv", 'r', encoding='utf-8') as f:
     reader = csv.reader(f)
     for line in reader:
         d[line[0]] = Team(line[1])
@@ -78,7 +78,7 @@ class Table:
         return self
 
     def to_wiki(self, filename):
-        with open(filename, 'a+') as f:
+        with open(filename, 'a+', encoding='utf-8') as f:
             notes = []
 
             f.write("== Tabela ==\n")
@@ -123,7 +123,7 @@ class Table:
                     if index > 0:
                         wiki_notes += "<br />"
                     wiki_notes += "<sup>{0}</sup>{1}".format(index + 1, note)
-            f.write("{{{{Fb cl footer |s={0} {{{{lang|en}}}} {1}}}}}\n".format(self.source, wiki_notes))
+            f.write("{{{{Fb cl footer |s={0} {{{{lang|en}}}} {1}}}}}\n\n".format(self.source, wiki_notes))
 
 
 class TableRow:
@@ -157,7 +157,7 @@ class TableRow:
         wiki = "t={0:<25}|w={1:<2}|d={2:<2}|l={3:<2}|gf={4:<3}|ga={5:<3}{6}{7}{8}".format(
             self.team.fb, self.wins, self.draws, self.losses, self.gf, self.ga,
             "|dp={0}".format(self.points_deducted[0]) if self.points_deducted[0] > 0 else "",
-            "|champions=y" if self.champions else "|relegation=y" if self.relegation else "",
+            "|champion=y" if self.champions else "|relegated=y" if self.relegation else "",
             "|bc={0}".format(color_wiki) if color_wiki and color else ""
         )
         return wiki

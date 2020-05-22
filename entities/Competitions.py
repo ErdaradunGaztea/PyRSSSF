@@ -31,14 +31,14 @@ class CompetitionDictionary:
             c_color = input('Provide color. Leave empty if not applicable.')
             c = Competition(c_name, c_color)
             self.competitions.__setitem__(competition, c)
-            with open("competitions.csv", 'a+') as f:
+            with open("competitions.csv", 'a+', encoding='utf-8') as f:
                 f.write("{0},{1},{2}\n".format(competition, c_name, c_color))
         return self.competitions.get(competition)
 
 
 competition_dictionary = CompetitionDictionary()
 d = dict()
-with open("competitions.csv", 'r') as f:
+with open("competitions.csv", 'r', encoding='utf-8') as f:
     reader = csv.reader(f)
     for line in reader:
         d[line[0]] = Competition(line[1], line[2])

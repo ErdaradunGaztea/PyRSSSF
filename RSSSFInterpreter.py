@@ -1,16 +1,21 @@
 import re
 
+from entities.Match import MatchTable, Match
 from entities.Teams import Table
 
 
 def interpret(file):
-    with open(file, 'r') as f:
+    with open(file, 'r', encoding='utf-8') as f:
         source = ""
+        table = None
+        matches = None
         for count, line in enumerate(f):
             if count == 0:
                 source = line.strip()
+                matches = MatchTable(source)
+            # don't create new table after one is created
             # omit lines which don't contain 'Final Table' header
-            if line.__contains__('Final Table'):
+            if not table and line.__contains__('Final Table'):
                 points_per_win = int(input('How many points per win were awarded?'))
                 table = Table(source, points_per_win)
                 next_line = next(f, '')
@@ -36,4 +41,23 @@ def interpret(file):
                         if line_data.__contains__('Relegated'):
                             table.standings.get(position).set_relegation()
                     next_line = next(f, '')
-                return table.add_competitions()
+                table.add_competitions()
+                continue
+            # so now we iterated over whole table
+            # now let's break on encountering final table
+            if line.__contains__('Final Table'):
+                break
+            # match regex
+            score_re = re.search(r'[0-9\s]+-[0-9\s]+', line)
+            if score_re:
+                home = line[:score_re.start()].strip()
+                away = line[score_re.end():].strip()
+                # remove trailing notes
+                note_re = re.search(r'\[.*\]', away)
+                if note_re:
+                    away = away[:note_re.start()].strip()
+                score = score_re.group(0).split("-")
+                home_score = score[0].strip()
+                away_score = score[1].strip()
+                matches.add_match(Match(home, away, home_score, away_score))
+        return table, matches
