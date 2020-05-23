@@ -21,4 +21,3 @@ Mnóstwo, dlatego jest we wczesnej fazie alpha. W miarę możliwości będą usu
 * ~~Skrypt nie generuje uwagi na boku o spadku (dodaje jednak kolor i dodawanie **(S)**).~~
 * ~~Skrypt jest póki co dostosowany do pierwszych lig, więc nie dysponuje obsługą awansów.~~
 * ~~Skrypt oddziela nazwę zespołu od liczby meczów i reszty statystyk na podstawie przynajmniej podwójnej spacji (gdyż nierzadko pojedyncza spacja występuje w nazwie zespołu). Jeżeli nazwa zespołu jest na tyle długa, że oddzielona jest pojedynczą spacją, skrypt nie zadziała.~~
-* ~~Jednocyfrowa liczba straconych bramek spowoduje wyrzucenie wyjątku albo nieprawidłowe wyniki (z powodu zapisu w postaci `00- 0`, z naciskiem na spację po myślniku).~~
