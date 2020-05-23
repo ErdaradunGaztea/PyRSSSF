@@ -103,6 +103,8 @@ class Table:
 
             f.write("== Tabela ==\n")
             f.write("{{Fb cl header}}\n")
+            # mark last position with competition added so that two consecutive positions aren't marked twice
+            last_competition_position = 0
             for position in self.standings.keys():
                 rowspan = 0
                 if self.competitions.get(position - 1) and not self.competitions.get(position):
@@ -121,12 +123,13 @@ class Table:
                     "||rowspan={0}|".format(rowspan) if rowspan > 0 else ""
                 ))
 
-                if self.competitions.get(position):
+                if self.competitions.get(position) and position > last_competition_position:
                     competition = self.competitions.get(position)
                     rows = 1
                     while self.competitions.__contains__(position + rows) and \
                             self.competitions.get(position + rows) and \
                             (competition == self.competitions.get(position + rows)):
+                        last_competition_position = position + rows
                         rows += 1
 
                     if competition.note:
