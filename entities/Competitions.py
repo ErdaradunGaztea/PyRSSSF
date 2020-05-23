@@ -73,7 +73,7 @@ class Relegation(LeagueChange):
         return "#FFCCCC"
 
     def to_wiki(self, rows, num_note):
-        super().to_wiki(rows, num_note, "relegation")
+        return super().to_wiki(rows, num_note, "relegation")
 
 
 class Promotion(LeagueChange):
@@ -84,4 +84,4 @@ class Promotion(LeagueChange):
         return "#D0F0C0"
 
     def to_wiki(self, rows, num_note):
-        super().to_wiki(rows, num_note, "promotion")
+        return super().to_wiki(rows, num_note, "promotion")
