@@ -15,10 +15,12 @@ def interpret(file):
                 matches = MatchTable(source)
             # don't create new table after one is created
             # omit lines which don't contain 'Final Table' header
-            if not table and line.__contains__('Final Table'):
+            if not table and line.lower().__contains__('final table'):
                 points_per_win = int(input('How many points per win were awarded?'))
                 table = Table(source, points_per_win)
                 next_line = next(f, '')
+                # declare team name length variable to apply condition to later
+                team_name_length = None
                 # first strip all empty lines
                 while not next_line.strip():
                     next_line = next(f, '')
@@ -26,18 +28,26 @@ def interpret(file):
                 while next_line.strip():
                     # get position in table
                     split = next_line.find('.')
-                    # read row only if line contains a dot
+                    # read row only if line contains a dot (risky but working)
                     if split >= 0:
                         position = int(next_line[:split].strip())
                         next_line = next_line[split + 1:]
-                        # TODO replace with length suggestion during first run
-                        split = re.search(r'\s{2,}', next_line)
-                        team = next_line[:split.start()]
-                        next_line = next_line[split.end():]
-                        # TODO extract goals first, then you can split the rest
-                        line_data = next_line.split()
-                        goals = line_data[4].split("-")
-                        table.add_row(position, team, line_data[1], line_data[2], line_data[3], goals[0], goals[1])
+                        if not team_name_length:
+                            split = re.search(r'\s{2,}', next_line)
+                            team_name_length = input("Predicted length of spaces for team name is {0}. Leave empty if "
+                                                     "agree, else input correct team name length.".format(split.end()))
+                            team_name_length = int(team_name_length) if team_name_length else split.end()
+                        team = next_line[:team_name_length].strip()
+                        next_line = next_line[team_name_length:].strip()
+                        # extract goal data
+                        goal_data = re.search(r'[0-9]+\s*-\s*[0-9]+', next_line)
+                        goals = goal_data.split("-")
+                        # extract matches played, wins, draws and losses
+                        match_data = next_line[:goal_data.start()].split()
+                        table.add_row(position, team, match_data[1], match_data[2], match_data[3],
+                                      goals[0].strip(), goals[1].strip())
+                        # extract points and any additional notes
+                        line_data = next_line[goal_data.end():].split()
                         if line_data.__contains__('Champions'):
                             table.standings.get(position).set_champions()
                         if line_data.__contains__('Relegated'):
@@ -45,10 +55,22 @@ def interpret(file):
                         if line_data.__contains__('Promoted'):
                             table.standings.get(position).set_promotion()
                     next_line = next(f, '')
-                # TODO maybe create menu with numbers to choose which to use?
-                table.add_competitions()
-                table.add_relegations()
-                table.add_promotions()
+                menu_prompt = """
+                Table enchancements available:\n
+                * press 1 to add promotions to higher league\n
+                * press 2 to add relegations to lower league\n
+                * press 3 to add qualifications to international competitions\n
+                Leave empty to finalize.
+                """
+                menu_choice = input(menu_prompt)
+                while menu_choice:
+                    if menu_choice == '1':
+                        table.add_promotions()
+                    if menu_choice == '2':
+                        table.add_relegations()
+                    if menu_choice == '3':
+                        table.add_competitions()
+                    menu_choice = input(menu_prompt)
                 # TODO add point deductions
                 continue
             # so now we iterated over whole table
