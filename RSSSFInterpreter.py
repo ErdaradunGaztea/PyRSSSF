@@ -30,9 +30,11 @@ def interpret(file):
                     if split >= 0:
                         position = int(next_line[:split].strip())
                         next_line = next_line[split + 1:]
+                        # TODO replace with length suggestion during first run
                         split = re.search(r'\s{2,}', next_line)
                         team = next_line[:split.start()]
                         next_line = next_line[split.end():]
+                        # TODO extract goals first, then you can split the rest
                         line_data = next_line.split()
                         goals = line_data[4].split("-")
                         table.add_row(position, team, line_data[1], line_data[2], line_data[3], goals[0], goals[1])
@@ -43,9 +45,11 @@ def interpret(file):
                         if line_data.__contains__('Promoted'):
                             table.standings.get(position).set_promotion()
                     next_line = next(f, '')
+                # TODO maybe create menu with numbers to choose which to use?
                 table.add_competitions()
                 table.add_relegations()
                 table.add_promotions()
+                # TODO add point deductions
                 continue
             # so now we iterated over whole table
             # now let's break on encountering final table
