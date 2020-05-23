@@ -16,6 +16,7 @@ def interpret(file):
             # don't create new table after one is created
             # omit lines which don't contain 'Final Table' header
             if not table and line.lower().__contains__('final table'):
+                print("### Creating table...")
                 points_per_win = int(input('How many points per win were awarded?'))
                 table = Table(source, points_per_win)
                 next_line = next(f, '')
@@ -41,7 +42,7 @@ def interpret(file):
                         next_line = next_line[team_name_length:].strip()
                         # extract goal data
                         goal_data = re.search(r'[0-9]+\s*-\s*[0-9]+', next_line)
-                        goals = goal_data.split("-")
+                        goals = goal_data.group(0).split("-")
                         # extract matches played, wins, draws and losses
                         match_data = next_line[:goal_data.start()].split()
                         table.add_row(position, team, match_data[1], match_data[2], match_data[3],
@@ -55,13 +56,11 @@ def interpret(file):
                         if line_data.__contains__('Promoted'):
                             table.standings.get(position).set_promotion()
                     next_line = next(f, '')
-                menu_prompt = """
-                Table enchancements available:\n
-                * press 1 to add promotions to higher league\n
-                * press 2 to add relegations to lower league\n
-                * press 3 to add qualifications to international competitions\n
-                Leave empty to finalize.
-                """
+                menu_prompt = "Table enchancements available:\n"\
+                              "* press 1 to add promotions to higher league\n"\
+                              "* press 2 to add relegations to lower league\n"\
+                              "* press 3 to add qualifications to international competitions\n"\
+                              "Leave empty to finalize table creation."
                 menu_choice = input(menu_prompt)
                 while menu_choice:
                     if menu_choice == '1':
@@ -72,22 +71,24 @@ def interpret(file):
                         table.add_competitions()
                     menu_choice = input(menu_prompt)
                 # TODO add point deductions
+                print("### Creating match matrix...")
                 continue
             # so now we iterated over whole table
-            # now let's break on encountering final table
-            if line.__contains__('Final Table'):
-                break
-            # match regex
-            score_re = re.search(r'[0-9\s]+-[0-9\s]+', line)
-            if score_re:
-                home = line[:score_re.start()].strip()
-                away = line[score_re.end():].strip()
-                # remove trailing notes
-                note_re = re.search(r'\[.*\]', away)
-                if note_re:
-                    away = away[:note_re.start()].strip()
-                score = score_re.group(0).split("-")
-                home_score = score[0].strip()
-                away_score = score[1].strip()
-                matches.add_match(Match(home, away, home_score, away_score))
+            if table:
+                # now let's break on encountering final table
+                if line.__contains__('Final Table'):
+                    break
+                # match regex
+                score_re = re.search(r'[0-9\s]+-[0-9\s]+', line)
+                if score_re:
+                    home = line[:score_re.start()].strip()
+                    away = line[score_re.end():].strip()
+                    # remove trailing notes
+                    note_re = re.search(r'\[.*\]', away)
+                    if note_re:
+                        away = away[:note_re.start()].strip()
+                    score = score_re.group(0).split("-")
+                    home_score = score[0].strip()
+                    away_score = score[1].strip()
+                    matches.add_match(Match(home, away, home_score, away_score))
         return table, matches

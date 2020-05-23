@@ -13,6 +13,8 @@ class TeamDictionary:
         self.teams = dict()
 
     def get(self, team):
+        # TODO maybe write separate teams.csv for each country? there's overlap between e.g. Faroes and Iceland,
+        #  for example Vikingur
         while not self.teams.__contains__(team):
             decision = input('Missing entry for {0}. Type "1" to associate with other entry. Type "2" to provide '
                              'new fb name.'.format(team))

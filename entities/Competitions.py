@@ -56,6 +56,9 @@ class LeagueChange:
         self.season = season
         self.note = note
 
+    def get_color(self):
+        return "#FFFFFF"
+
     def to_wiki(self, rows, num_note, event_type):
         return "{{{{Fb cl2 qr |{0}=y |rows={1} |s={2} |c={3} {4}}}}}\n".format(
             event_type, rows, self.season, self.league, "|nt={0}".format(num_note) if self.note else ""
@@ -66,6 +69,9 @@ class Relegation(LeagueChange):
     def __init__(self, league, season, note=None):
         super().__init__(league, season, note)
 
+    def get_color(self):
+        return "#FFCCCC"
+
     def to_wiki(self, rows, num_note):
         super().to_wiki(rows, num_note, "relegation")
 
@@ -73,6 +79,9 @@ class Relegation(LeagueChange):
 class Promotion(LeagueChange):
     def __init__(self, league, season, note=None):
         super().__init__(league, season, note)
+
+    def get_color(self):
+        return "#D0F0C0"
 
     def to_wiki(self, rows, num_note):
         super().to_wiki(rows, num_note, "promotion")
