@@ -15,7 +15,10 @@ Mnóstwo, dlatego jest we wczesnej fazie alpha. W miarę możliwości będą usu
 
 * Możliwy jest wybór jedynie pomiędzy zwycięstwem za 2 i 3 punkty, skrypt nie dysponuje obsługą innych rodzajów szablonów.
 * Tabela meczów zostanie wygenerowana poprawnie tylko w przypadku gdy dla dowolnej pary gospodarzy ZespółX i gości ZespółY rozegrany został najwyżej jeden mecz ZespółX - ZespółY.
-[x] Skrypt nie generuje uwagi na boku o spadku (dodaje jednak kolor i dodawanie **(S)**).
-[x] Skrypt jest póki co dostosowany do pierwszych lig, więc nie dysponuje obsługą awansów.
-[x] Skrypt oddziela nazwę zespołu od liczby meczów i reszty statystyk na podstawie przynajmniej podwójnej spacji (gdyż nierzadko pojedyncza spacja występuje w nazwie zespołu). Jeżeli nazwa zespołu jest na tyle długa, że oddzielona jest pojedynczą spacją, skrypt nie zadziała.
-[x] Jednocyfrowa liczba straconych bramek spowoduje wyrzucenie wyjątku albo nieprawidłowe wyniki (z powodu zapisu w postaci `00- 0`, z naciskiem na spację po myślniku).
+
+## Prawdopodobnie rozwiązane problemy
+
+* ~~Skrypt nie generuje uwagi na boku o spadku (dodaje jednak kolor i dodawanie **(S)**).~~
+* ~~Skrypt jest póki co dostosowany do pierwszych lig, więc nie dysponuje obsługą awansów.~~
+* ~~Skrypt oddziela nazwę zespołu od liczby meczów i reszty statystyk na podstawie przynajmniej podwójnej spacji (gdyż nierzadko pojedyncza spacja występuje w nazwie zespołu). Jeżeli nazwa zespołu jest na tyle długa, że oddzielona jest pojedynczą spacją, skrypt nie zadziała.~~
+* ~~Jednocyfrowa liczba straconych bramek spowoduje wyrzucenie wyjątku albo nieprawidłowe wyniki (z powodu zapisu w postaci `00- 0`, z naciskiem na spację po myślniku).~~
