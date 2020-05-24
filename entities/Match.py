@@ -40,9 +40,11 @@ class MatchRow:
     def add_match(self, match):
         self.matches.append(match)
 
-    def to_wiki(self, f):
+    def to_wiki(self, f, notes):
         f.write("{{{{fb r team |t={0}}}}}\n".format(self.home.fb))
         for match in sorted(self.matches, key=lambda m: m.away.fb):
+            if match.note:
+                notes.append(match.note)
             f.write(match.to_wiki())
         f.write("\n")
 
@@ -69,7 +71,7 @@ class MatchTable:
             f.write("}}\n\n")
             # body
             for row_key in sorted(self.rows.keys(), key=lambda k: k.fb):
-                self.rows.get(row_key).to_wiki(f)
+                self.rows.get(row_key).to_wiki(f, notes)
 
             wiki_notes = ""
             if len(notes) > 0:
