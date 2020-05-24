@@ -90,7 +90,7 @@ def interpret(file):
 
         note_prompt = "Note detected for a match: {0} {1}-{2} {3}.\n" \
                       "Input text to append a note to this match.\n" \
-                      "Input single number to link this match with previous note." \
+                      "Input single number to link this match with previous note.\n" \
                       "Leave empty if no note necessary."
         notes = dict()
 
@@ -117,7 +117,7 @@ def interpret(file):
                 # if a note detected
                 if line[match_length:].__contains__('['):
                     note_input = input(note_prompt.format(home, home_score, away_score, away))
-                    previous_note_match = re.match(r'[0-9]+^', note_input)
+                    previous_note_match = re.match(r'[0-9]+$', note_input)
                     if previous_note_match:
                         match.add_note((previous_note_match.group(), notes.get(previous_note_match)))
                     elif note_input:

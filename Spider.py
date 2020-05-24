@@ -1,6 +1,8 @@
 import scrapy
 from scrapy.crawler import CrawlerProcess
 
+import re
+
 
 class RSSSFSpider(scrapy.Spider):
     name = "RSSSF_default_spider"
@@ -24,6 +26,12 @@ class RSSSFSpider(scrapy.Spider):
                 text_file.write(response.url + "\n")
                 for count, line in enumerate(f):
                     if count % 2 == 0:
+                        # TODO: replace tabs with spaces (tab size is equal to 8)
+                        tab = re.search(r'\t', line)
+                        while tab:
+                            tab_length = 9 - (tab.start() + 1) % 8
+                            line = line[:tab.start()] + ' ' * tab_length + line[tab.end():]
+                            tab = re.search(r'\t', line)
                         text_file.write(line)
 
 
