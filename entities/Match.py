@@ -44,7 +44,7 @@ class MatchRow:
         f.write("{{{{fb r team |t={0}}}}}\n".format(self.home.fb))
         for match in sorted(self.matches, key=lambda m: m.away.fb):
             if match.note:
-                notes.append(match.note)
+                notes.__setitem__(match.note[0], match.note[1])
             f.write(match.to_wiki())
         f.write("\n")
 
