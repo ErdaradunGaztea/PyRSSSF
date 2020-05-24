@@ -14,7 +14,7 @@ class TeamDictionary:
 
     def get(self, team):
         # TODO maybe write separate teams.csv for each country? there's overlap between e.g. Faroes and Iceland,
-        #  for example Vikingur
+        #  for example Vikingur; or add country as additional parameter
         while not self.teams.__contains__(team):
             decision = input('Missing entry for {0}. Type "1" to associate with other entry. Type "2" to provide '
                              'new fb name.'.format(team))
@@ -143,7 +143,7 @@ class Table:
                     if index > 0:
                         wiki_notes += "<br />"
                     wiki_notes += "<sup>{0}</sup>{1}".format(index + 1, note)
-            f.write("{{{{Fb cl footer |s={0} {{{{lang|en}}}} {1}}}}}\n\n".format(self.source, wiki_notes))
+            f.write("{{{{Fb cl footer |s=[{0}] {{{{lang|en}}}} {1}}}}}\n\n".format(self.source, wiki_notes))
 
 
 class TableRow:

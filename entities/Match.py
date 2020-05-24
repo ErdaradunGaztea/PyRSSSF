@@ -7,15 +7,24 @@ class Match:
         self.away = team_dictionary.get(away)
         self.goals_h = goals_h
         self.goals_a = goals_a
+        self.note = None
+
+    def add_note(self, note):
+        # note should be a tuple, (number, content)
+        self.note = note
+        return self
 
     def to_wiki(self):
-        return "<!-- {0:>25} --> {{{{fb r |gf={1}|ga={2}}}}}\n".format(self.away.fb, self.goals_h, self.goals_a)
+        return "<!-- {0:>25} --> {{{{fb r |gf={1}|ga={2}{3}}}}}\n".format(
+            self.away.fb, self.goals_h, self.goals_a, "|nt={0}".format(self.note[0]) if self.note else ""
+        )
 
 
 class BlankMatch:
     def __init__(self, team):
         self.home = team
         self.away = team
+        self.note = None
 
     def to_wiki(self):
         return "<!-- {0:>25} --> {{{{fb r |r=null}}}}\n".format(self.away.fb)
@@ -34,6 +43,8 @@ class MatchRow:
     def to_wiki(self, f):
         f.write("{{{{fb r team |t={0}}}}}\n".format(self.home.fb))
         for match in sorted(self.matches, key=lambda m: m.away.fb):
+            if match.note:
+                notes.append(match.note)
             f.write(match.to_wiki())
         f.write("\n")
 
@@ -50,6 +61,7 @@ class MatchTable:
         self.rows.get(home).add_match(match)
 
     def to_wiki(self, filename):
+        notes = dict()
         with open(filename, 'a+', encoding='utf-8') as f:
             # header
             f.write("== Wyniki ==\n")
@@ -60,4 +72,12 @@ class MatchTable:
             # body
             for row_key in sorted(self.rows.keys(), key=lambda k: k.fb):
                 self.rows.get(row_key).to_wiki(f)
-            f.write("{{{{fb r footer |s=[{0}] {{{{lang|en}}}} }}}}\n\n".format(self.source))
+
+            wiki_notes = ""
+            if len(notes) > 0:
+                wiki_notes = "|nt="
+                for index, note in notes.items():
+                    if index > 2:
+                        wiki_notes += "<br />"
+                    wiki_notes += "<sup>{0}</sup>{1}".format(index, note)
+            f.write("{{{{fb r footer |s=[{0}] {{{{lang|en}}}} {1}}}}}\n\n".format(self.source, wiki_notes))
