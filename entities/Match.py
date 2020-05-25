@@ -56,9 +56,10 @@ class MatchTable:
 
     def add_match(self, match):
         home = match.home
-        if not self.rows.__contains__(home):
-            self.rows.__setitem__(home, MatchRow(home))
-        self.rows.get(home).add_match(match)
+        home_fb = match.home.fb
+        if not self.rows.__contains__(home_fb):
+            self.rows.__setitem__(home_fb, MatchRow(home))
+        self.rows.get(home_fb).add_match(match)
 
     def to_wiki(self, filename):
         notes = dict()

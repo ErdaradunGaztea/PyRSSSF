@@ -16,8 +16,11 @@ class TeamDictionary:
         # TODO maybe write separate teams.csv for each country? there's overlap between e.g. Faroes and Iceland,
         #  for example Vikingur; or add country as additional parameter
         while not self.teams.__contains__(team):
-            decision = input('Missing entry for {0}. Type "1" to associate with other entry. Type "2" to provide '
-                             'new fb name.'.format(team))
+            decision = input('Missing entry for {0}.\n'
+                             'Type "1" to associate with other entry.\n'
+                             'Type "2" to provide new fb name.\n'
+                             'Type "3" to assign temporary fb name (use for entries with typos).\n'
+                             'Type "0" to skip this line.'.format(team))
             if decision == '1':
                 key = input('Provide key of the other entry to associate with.')
                 if self.teams.__contains__(key):
@@ -31,6 +34,11 @@ class TeamDictionary:
                 self.teams.__setitem__(team, Team(fb_name))
                 with open("teams.csv", 'a+', encoding='utf-8') as f:
                     f.write("{0},{1}\n".format(team, fb_name))
+            elif decision == '3':
+                fb_name = input('Provide fb name for this entry.')
+                self.teams.__setitem__(team, Team(fb_name))
+            elif decision == '0':
+                return None
         return self.teams.get(team)
 
 
