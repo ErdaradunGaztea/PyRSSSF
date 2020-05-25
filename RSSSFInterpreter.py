@@ -94,40 +94,44 @@ def interpret(file):
                       "Leave empty if no note necessary."
         notes = dict()
 
-        # now continue until encountering final table
+        # now continue until encountering final table or EOF
         while line is not None and not line.lower().__contains__(table_header):
             # match regex
-            score_re = re.search(r'[0-9\s]+-[0-9\s]+', line)
-            if score_re:
-                if not match_length:
-                    split = re.search(r'\[', line)
-                    match_length = split.start() if split else len(line)
-                    match_length_input = input("Predicted length of spaces for a match is {0}. Leave empty if "
-                                               "agree, else input correct match result length.".format(match_length))
-                    if match_length_input:
-                        match_length = int(match_length_input)
-                # TODO: allow to skip match line if suspicious about strange key
-                match_line = line[:match_length]
-                home = match_line[:score_re.start()].strip()
-                away = match_line[score_re.end():].strip()
-                score = score_re.group(0).split("-")
-                home_score = score[0].strip()
-                away_score = score[1].strip()
-                match = Match(home, away, home_score, away_score)
-                # continue only is line is not skipped (None condition below is equivalent to this)
-                if match.home is not None and match.away is not None:
-                    # if a note detected
-                    if line[match_length:].__contains__('['):
-                        note_input = input(note_prompt.format(home, home_score, away_score, away))
-                        previous_note_match = re.match(r'[0-9]+$', note_input)
-                        if previous_note_match:
-                            match.add_note((previous_note_match.group(), notes.get(previous_note_match)))
-                        elif note_input:
-                            key = len(notes) + 2
-                            notes.__setitem__(key, note_input)
-                            match.add_note((key, note_input))
-                            print("New note added:\n{0}: {1}".format(key, note_input))
-                    matches.add_match(match)
+            awd_re = re.search(r'\sawd\s', line)
+            if awd_re:
+                # TODO: handle forfeits
+                pass
+            else:
+                score_re = re.search(r'[0-9\s]+-[0-9\s]+', line)
+                if score_re:
+                    if not match_length:
+                        split = re.search(r'\[', line)
+                        match_length = split.start() if split else len(line)
+                        match_length_input = input("Predicted length of spaces for a match is {0}. Leave empty if "
+                                                   "agree, else input correct match result length.".format(match_length))
+                        if match_length_input:
+                            match_length = int(match_length_input)
+                    match_line = line[:match_length]
+                    home = match_line[:score_re.start()].strip()
+                    away = match_line[score_re.end():].strip()
+                    score = score_re.group(0).split("-")
+                    home_score = score[0].strip()
+                    away_score = score[1].strip()
+                    match = Match(home, away, home_score, away_score)
+                    # continue only is line is not skipped (None condition below is equivalent to this)
+                    if match.home is not None and match.away is not None:
+                        # if a note detected
+                        if line[match_length:].__contains__('['):
+                            note_input = input(note_prompt.format(home, home_score, away_score, away))
+                            previous_note_match = re.match(r'[0-9]+$', note_input)
+                            if previous_note_match:
+                                match.add_note((previous_note_match.group(), notes.get(previous_note_match)))
+                            elif note_input:
+                                key = len(notes) + 2
+                                notes.__setitem__(key, note_input)
+                                match.add_note((key, note_input))
+                                print("New note added:\n{0}: {1}".format(key, note_input))
+                        matches.add_match(match)
             line = get_next(f)
 
         # TODO: create top scorers

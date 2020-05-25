@@ -4,7 +4,8 @@ from entities.Teams import team_dictionary
 class Match:
     def __init__(self, home, away, goals_h, goals_a):
         self.home = team_dictionary.get(home)
-        self.away = team_dictionary.get(away)
+        if self.home is not None:
+            self.away = team_dictionary.get(away)
         self.goals_h = goals_h
         self.goals_a = goals_a
         self.note = None
@@ -67,11 +68,11 @@ class MatchTable:
             # header
             f.write("== Wyniki ==\n")
             f.write("{{{{fb r2 header |nt={0}".format(len(self.rows)))
-            for row_key in sorted(self.rows.keys(), key=lambda k: k.fb):
-                f.write(" |{0}".format(row_key.fb))
+            for row_key in sorted(self.rows.keys(), key=lambda k: k):
+                f.write(" |{0}".format(row_key))
             f.write("}}\n\n")
             # body
-            for row_key in sorted(self.rows.keys(), key=lambda k: k.fb):
+            for row_key in sorted(self.rows.keys(), key=lambda k: k):
                 self.rows.get(row_key).to_wiki(f, notes)
 
             wiki_notes = ""

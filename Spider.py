@@ -29,7 +29,7 @@ class RSSSFSpider(scrapy.Spider):
                         # TODO: replace tabs with spaces (tab size is equal to 8)
                         tab = re.search(r'\t', line)
                         while tab:
-                            tab_length = 9 - (tab.start() + 1) % 8
+                            tab_length = 8 - tab.start() % 8
                             line = line[:tab.start()] + ' ' * tab_length + line[tab.end():]
                             tab = re.search(r'\t', line)
                         text_file.write(line)
