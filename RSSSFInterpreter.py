@@ -95,11 +95,11 @@ def read_match_format_1(line, notes, match_length, note_prompt):
     awd_re = re.search(r'\sawd\s', line)
     if awd_re:
         # TODO: handle forfeits
-        return None
+        return None, match_length
 
     score_re = re.search(r'[0-9\s]+-[0-9\s]+', line)
     if not score_re:
-        return None
+        return None, match_length
 
     if not match_length:
         split = re.search(r'\[', line)
@@ -119,7 +119,7 @@ def read_match_format_1(line, notes, match_length, note_prompt):
 
     # continue only if line is not skipped (None condition below is equivalent to this)
     if match.home is None or match.away is None:
-        return None
+        return None, match_length
 
     # if a note detected
     if line[match_length:].__contains__('['):
@@ -138,19 +138,19 @@ def read_match_format_1(line, notes, match_length, note_prompt):
 def read_match_format_2(line, notes, match_length, note_prompt):
     score_re = re.search(r'[0-9]+\s*-\s*[0-9]+', line)
     if not score_re:
-        return None
+        return None, match_length
 
     if not match_length:
-        date_re = re.search(r'[0-9]+\.\w{3}\.[0-9]{2}')
+        date_re = re.search(r'[0-9]+\.\w{3}\.[0-9]{2}', line)
         if not date_re:
             print("Invalid format detected!\nLine: {0}".format(line))
-            return None
+            return None, match_length
         match_length = (date_re.end(), score_re.end())
 
     match_line = line[match_length[0]:match_length[1]]
     first_hyphen = re.search(r'\s-\s', match_line)
     home = match_line[:first_hyphen.start()].strip()
-    away = match_line[first_hyphen.end():score_re.start()].strip()
+    away = match_line[first_hyphen.end():(score_re.start() - match_length[0])].strip()
     score = score_re.group(0).split("-")
     home_score = score[0].strip()
     away_score = score[1].strip()
@@ -158,7 +158,7 @@ def read_match_format_2(line, notes, match_length, note_prompt):
 
     # continue only if line is not skipped (None condition below is equivalent to this)
     if match.home is None or match.away is None:
-        return None
+        return None, match_length
 
     # if a note detected
     if line[match_length[1]:].__contains__('['):
@@ -204,7 +204,7 @@ def read_matches(f, source):
             if match_format == 1:
                 match, match_length = read_match_format_1(line, notes, match_length, note_prompt)
             elif match_format == 2:
-                match = read_match_format_2(line, notes, match_length, note_prompt)
+                match, match_length = read_match_format_2(line, notes, match_length, note_prompt)
 
             if match:
                 matches.add_match(match)
@@ -214,7 +214,7 @@ def read_matches(f, source):
                 return matches
             HeaderDetector.detect(next_line)
         stop = input('Header detected: "{0}". Type "y" to continue scraping. '
-                     'Leave empty otherwise.'.format(line)) == 'y'
+                     'Leave empty otherwise.'.format(line)) != 'y'
     return matches
 
 

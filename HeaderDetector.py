@@ -6,13 +6,13 @@ class HeaderDetector:
     @staticmethod
     def detect(line):
         if not HeaderDetector.expecting_header:
-            if not line:
+            if not line.strip():
                 HeaderDetector.expecting_header = True
         elif not HeaderDetector.possible_header:
-            if line:
+            if line.strip():
                 HeaderDetector.possible_header = True
         elif not HeaderDetector.header:
-            if not line:
+            if not line.strip():
                 HeaderDetector.header = True
             else:
                 HeaderDetector.expecting_header = False
