@@ -1,4 +1,4 @@
-from RSSSFInterpreter import interpret
+from rsssf.RSSSFInterpreter import interpret
 from Spider import run_spider
 
 import os.path
@@ -12,5 +12,6 @@ def main(country, year):
     t, m, s = interpret("{0}_{1}.txt".format(country, year))
     t.to_wiki("{0}_{1}.wiki.txt".format(country, year))
     m.to_wiki("{0}_{1}.wiki.txt".format(country, year))
-    s.to_wiki("{0}_{1}.wiki.txt".format(country, year))
+    if s:
+        s.to_wiki("{0}_{1}.wiki.txt".format(country, year))
     return t, m, s

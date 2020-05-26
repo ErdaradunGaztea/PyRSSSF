@@ -2,84 +2,6 @@ import re
 
 from HeaderDetector import HeaderDetector
 from entities.Match import MatchTable, Match
-from entities.Teams import Table, team_dictionary
-
-# TODO: predict h1 headers by this condition:
-#  if a non-empty line is preceded and succeeded by at least one empty line, then it might be a h1 header
-# TODO: predict match description type: either TeamA 0-0 TeamB or TeamA - TeamB 0-0
-from entities.Topscorers import TopscorerTable
-
-
-def get_next(iterator):
-    try:
-        return next(iterator)
-    except StopIteration:
-        return None
-
-
-def read_table(f, source):
-    # create standings table
-    print("### Creating table...")
-    points_per_win = int(input('How many points per win were awarded?'))
-    table = Table(source, points_per_win)
-    # declare team name length variable to apply condition to later
-    team_name_length = None
-
-    # first strip all empty lines
-    line = get_next(f)
-    while not line.strip():
-        line = next(f, '')
-
-    # then add rows to table until empty line encountered
-    while line.strip():
-        # get position in table
-        split = line.find('.')
-        # read row only if line contains a dot (risky but working)
-        if split >= 0:
-            position = int(line[:split].strip())
-            line = line[split + 1:]
-            if not team_name_length:
-                split = re.search(r'\s{2,}', line)
-                team_name_length = input("Predicted length of spaces for team name is {0}. Leave empty if "
-                                         "agree, else input correct team name length.".format(split.end()))
-                team_name_length = int(team_name_length) if team_name_length else split.end()
-            team = line[:team_name_length].strip()
-            line = line[team_name_length:].strip()
-            # extract goal data
-            goal_data = re.search(r'[0-9]+\s*-\s*[0-9]+', line)
-            goals = goal_data.group(0).split("-")
-            # extract matches played, wins, draws and losses
-            match_data = line[:goal_data.start()].split()
-            table.add_row(position, team, match_data[1], match_data[2], match_data[3],
-                          goals[0].strip(), goals[1].strip())
-            # extract points and any additional notes
-            line_data = line[goal_data.end():].split()
-            if line_data.__contains__('Champions'):
-                table.standings.get(position).set_champions()
-            if line_data.__contains__('Relegated'):
-                table.standings.get(position).set_relegation()
-            if line_data.__contains__('Promoted'):
-                table.standings.get(position).set_promotion()
-        line = next(f, '')
-    return table
-
-
-def update_table(table):
-    # fill result table with additional info
-    menu_prompt = "Table enchancements available:\n" \
-                  "* press 1 to add promotions to higher league\n" \
-                  "* press 2 to add relegations to lower league\n" \
-                  "* press 3 to add qualifications to international competitions\n" \
-                  "Leave empty to finalize table creation."
-    menu_choice = input(menu_prompt)
-    while menu_choice:
-        if menu_choice == '1':
-            table.add_promotions()
-        if menu_choice == '2':
-            table.add_relegations()
-        if menu_choice == '3':
-            table.add_competitions()
-        menu_choice = input(menu_prompt)
 
 
 def detect_match_format(line):
@@ -92,8 +14,7 @@ def detect_match_format(line):
     elif re.match(r'[\w\s]+\s+[0-9]+-[0-9]+\s+[\w\s]+', line):
         print("Detected match format no. 1.")
         return 1
-    else:
-        return None
+    return None
 
 
 def read_match_format_1(line, notes, match_length, note_prompt):
@@ -259,69 +180,3 @@ def read_matches(f, source):
             return matches
         HeaderDetector.detect(next_line)
     return matches, line
-
-
-def read_topscorers(f, line):
-    # look for topscorers header
-    topscorers_header = "topscorers"
-    while line is not None and not line.lower().__contains__(topscorers_header):
-        line = next(f, None)
-
-    # strip empty lines
-    line = next(f, None)
-    while line is not None and not line.strip():
-        line = next(f, None)
-
-    if line is None:
-        return None
-
-    print("### Creating top scorers table...")
-    table = TopscorerTable()
-
-    # extract topscorers
-    current_goals = 0
-    default_country = input("What is the 3-letter code of the default nationality of topscorers?")
-    while line is not None and line.strip():
-        # update goal score, if present
-        goalscore_re = re.match(r'\s*([0-9]+)\s*-\s*', line)
-        if goalscore_re:
-            current_goals = goalscore_re.group(1).strip()
-
-        # read player team
-        team_re = re.search(r'\s+\[([\w\s]+)\]', line)
-        if not team_re:
-            line = next(f, None)
-            continue
-        team = team_dictionary.get(team_re.group(1))
-
-        # extract player name (and nationality, if present)
-        player_line = line[goalscore_re.end():team_re.start()] if goalscore_re else line[:team_re.start()]
-        # TODO: insert if code of length 3, else ask and save answer
-        nationality_re = re.search(r'\s+\((\w{3})\)', player_line)
-        nationality = default_country
-        if nationality_re:
-            nationality = nationality_re.group(1).upper()
-        name = player_line[:nationality_re.start()].strip() if nationality_re else player_line.strip()
-        table.add_topscorer(name, int(current_goals), team, nationality)
-
-        line = next(f, None)
-    return table
-
-
-def interpret(file):
-    table_header = "final table".lower()
-    with open(file, 'r', encoding='utf-8') as f:
-        # read first line with source
-        source = get_next(f).strip()
-
-        # find table header
-        line = get_next(f)
-        while line is not None and not line.lower().__contains__(table_header):
-            line = get_next(f)
-
-        table = read_table(f, source)
-        update_table(table)
-        matches, line = read_matches(f, source)
-        topscorers = read_topscorers(f, line)
-
-    return table, matches, topscorers

@@ -16,8 +16,8 @@ class TopscorerTable:
     def __init__(self):
         self.scorers = []
 
-    def add_topscorer(self, name, goals, team=None, country_code=None):
-        self.scorers.append(Topscorer(name, goals, team, country_code))
+    def add_topscorer(self, player):
+        self.scorers.append(player)
 
     def to_wiki(self, filename):
         # first, sort scorers in-place
