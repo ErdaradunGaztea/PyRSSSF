@@ -82,9 +82,14 @@ def update_table(table):
 
 
 def detect_match_format(line):
-    if re.match(r'[^-]+\s+[\w\s]+\s+-\s+[\w\s]+\s+[0-9]+-[0-9]+', line):
+    if re.match(r'[\w\s]+\s+-\s+[\w\s]+\s+[0-9]+:[0-9]+\s+\([0-9]+:[0-9]+\)', line):
+        print("Detected match format no. 3.")
+        return 3
+    elif re.match(r'[^-]+\s+[\w\s]+\s+-\s+[\w\s]+\s+[0-9]+-[0-9]+', line):
+        print("Detected match format no. 2.")
         return 2
     elif re.match(r'[\w\s]+\s+[0-9]+-[0-9]+\s+[\w\s]+', line):
+        print("Detected match format no. 1.")
         return 1
     else:
         return None
@@ -174,6 +179,34 @@ def read_match_format_2(line, notes, match_length, note_prompt):
     return match, match_length
 
 
+def read_match_format_3(line, notes, match_length, note_prompt):
+    score_re = re.search(r'([0-9]+:[0-9]+)\s+\([0-9]+:[0-9]+\)', line)
+    if not score_re:
+        return None, match_length
+
+    if not match_length:
+        split = re.search(r'\[', line)
+        match_length = split.start() if split else len(line)
+        match_length_input = input("Predicted length of spaces for a match is {0}. Leave empty if "
+                                   "agree, else input correct match result length.".format(match_length))
+        if match_length_input:
+            match_length = int(match_length_input)
+
+    first_hyphen = re.search(r'\s-\s', line)
+    home = line[:first_hyphen.start()].strip()
+    away = line[first_hyphen.end():score_re.start()].strip()
+    score = score_re.group(1).split(":")
+    home_score = score[0].strip()
+    away_score = score[1].strip()
+    match = Match(home, away, home_score, away_score)
+
+    # continue only if line is not skipped (None condition below is equivalent to this)
+    if match.home is None or match.away is None:
+        return None, match_length
+
+    return match, match_length
+
+
 def read_matches(f, source):
     # create match matrix
     print("### Creating match matrix...")
@@ -205,9 +238,13 @@ def read_matches(f, source):
                 match, match_length = read_match_format_1(line, notes, match_length, note_prompt)
             elif match_format == 2:
                 match, match_length = read_match_format_2(line, notes, match_length, note_prompt)
+            elif match_format == 3:
+                match, match_length = read_match_format_3(line, notes, match_length, note_prompt)
 
             if match:
                 matches.add_match(match)
+                # if match detected, it's definitely not a header
+                HeaderDetector.clear()
 
             next_line = next(f, None)
             if next_line is None:
@@ -215,6 +252,11 @@ def read_matches(f, source):
             HeaderDetector.detect(next_line)
         stop = input('Header detected: "{0}". Type "y" to continue scraping. '
                      'Leave empty otherwise.'.format(line)) != 'y'
+
+        next_line = next(f, None)
+        if next_line is None:
+            return matches
+        HeaderDetector.detect(next_line)
     return matches
 
 
