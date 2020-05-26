@@ -2,12 +2,13 @@ import re
 
 from HeaderDetector import HeaderDetector
 from entities.Match import MatchTable, Match
-from entities.Teams import Table
-
+from entities.Teams import Table, team_dictionary
 
 # TODO: predict h1 headers by this condition:
 #  if a non-empty line is preceded and succeeded by at least one empty line, then it might be a h1 header
 # TODO: predict match description type: either TeamA 0-0 TeamB or TeamA - TeamB 0-0
+from entities.Topscorers import TopscorerTable
+
 
 def get_next(iterator):
     try:
@@ -257,7 +258,54 @@ def read_matches(f, source):
         if next_line is None:
             return matches
         HeaderDetector.detect(next_line)
-    return matches
+    return matches, line
+
+
+def read_topscorers(f, line):
+    # look for topscorers header
+    topscorers_header = "topscorers"
+    while line is not None and not line.lower().__contains__(topscorers_header):
+        line = next(f, None)
+
+    # strip empty lines
+    line = next(f, None)
+    while line is not None and not line.strip():
+        line = next(f, None)
+
+    if line is None:
+        return None
+
+    print("### Creating top scorers table...")
+    table = TopscorerTable()
+
+    # extract topscorers
+    current_goals = 0
+    default_country = input("What is the 3-letter code of the default nationality of topscorers?")
+    while line is not None and line.strip():
+        # update goal score, if present
+        goalscore_re = re.match(r'\s*([0-9]+)\s*-\s*', line)
+        if goalscore_re:
+            current_goals = goalscore_re.group(1).strip()
+
+        # read player team
+        team_re = re.search(r'\s+\[([\w\s]+)\]', line)
+        if not team_re:
+            line = next(f, None)
+            continue
+        team = team_dictionary.get(team_re.group(1))
+
+        # extract player name (and nationality, if present)
+        player_line = line[goalscore_re.end():team_re.start()] if goalscore_re else line[:team_re.start()]
+        # TODO: insert if code of length 3, else ask and save answer
+        nationality_re = re.search(r'\s+\((\w{3})\)', player_line)
+        nationality = default_country
+        if nationality_re:
+            nationality = nationality_re.group(1).upper()
+        name = player_line[:nationality_re.start()].strip() if nationality_re else player_line.strip()
+        table.add_topscorer(name, int(current_goals), team, nationality)
+
+        line = next(f, None)
+    return table
 
 
 def interpret(file):
@@ -273,8 +321,7 @@ def interpret(file):
 
         table = read_table(f, source)
         update_table(table)
-        matches = read_matches(f, source)
-        # TODO: create top scorers
-        print("### NOT creating top scorers table...")
+        matches, line = read_matches(f, source)
+        topscorers = read_topscorers(f, line)
 
-    return table, matches
+    return table, matches, topscorers
