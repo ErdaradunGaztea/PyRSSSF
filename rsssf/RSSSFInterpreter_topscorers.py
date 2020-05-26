@@ -14,24 +14,6 @@ def detect_topscorer_format(line):
     return None
 
 
-def read_topscorer_format_2(line, current_goals, default_country):
-    # update goal score, if present
-    goalscore_re = re.match(r'\s*([0-9]+)\s+-?\s*', line)
-    if goalscore_re:
-        current_goals = goalscore_re.group(1).strip()
-
-    # read player team
-    team_re = re.search(r'\s+\(([\w\s]+)\)', line)
-    if not team_re:
-        return None, current_goals
-    team = team_dictionary.get(team_re.group(1))
-
-    # extract player name (and nationality, if present)
-    player_line = line[goalscore_re.end():team_re.start()] if goalscore_re else line[:team_re.start()]
-    # TODO: is there any way of scraping nationality?
-    return Topscorer(player_line.strip(), int(current_goals), team, default_country), current_goals
-
-
 def read_topscorer_format_1(line, current_goals, default_country):
     # update goal score, if present
     goalscore_re = re.match(r'\s*([0-9]+)\s*-\s*', line)
@@ -42,7 +24,7 @@ def read_topscorer_format_1(line, current_goals, default_country):
     team_re = re.search(r'\s+\[([\w\s]+)\]', line)
     if not team_re:
         return None, current_goals
-    team = team_dictionary.get(team_re.group(1))
+    team = team_dictionary.get(team_re.group(1).strip())
 
     # extract player name (and nationality, if present)
     player_line = line[goalscore_re.end():team_re.start()] if goalscore_re else line[:team_re.start()]
@@ -53,6 +35,24 @@ def read_topscorer_format_1(line, current_goals, default_country):
         nationality = nationality_re.group(1).upper()
     name = player_line[:nationality_re.start()].strip() if nationality_re else player_line.strip()
     return Topscorer(name, int(current_goals), team, nationality), current_goals
+
+
+def read_topscorer_format_2(line, current_goals, default_country):
+    # update goal score, if present
+    goalscore_re = re.match(r'\s*([0-9]+)\s+-?\s*', line)
+    if goalscore_re:
+        current_goals = goalscore_re.group(1).strip()
+
+    # read player team
+    team_re = re.search(r'\s+\(([\w\s]+)\)', line)
+    if not team_re:
+        return None, current_goals
+    team = team_dictionary.get(team_re.group(1).strip())
+
+    # extract player name (and nationality, if present)
+    player_line = line[goalscore_re.end():team_re.start()] if goalscore_re else line[:team_re.start()]
+    # TODO: is there any way of scraping nationality?
+    return Topscorer(player_line.strip(), int(current_goals), team, default_country), current_goals
 
 
 def read_topscorers(f, line):
