@@ -1,49 +1,77 @@
-ÍBK,Keflavík
-ÍA,Akranes
-KR,KR Reykjavík
-ÍBV,Vestmannaeyjar
-Valur,Valur Reykjavík
-Fram,Fram Reykjavík
-ÍBA,ÍBA Akureyri
-Víkingur,Víkingur Reykjavík
-Víkingur R.,Víkingur Reykjavík
-UBK,Breiðablik
-FH,Hafnarfjörður
-Þróttur,Þróttur Reykjavík
-Þróttur R.,Þróttur Reykjavík
-Þór,Þór Akureyri
-Þór A.,Þór Akureyri
-KA,KA Akureyri
-Haukar,Haukar
-Vikingur,Víkingur Reykjavík
-IBV,Vestmannaeyjar
-IA,Akranes
-IBI,ÍB Ísafjörður
-IBK,Keflavík
-Thor,Þór Akureyri
-Throttur,Þróttur Reykjavík
-Throttur R.,Þróttur Reykjavík
-Thor A.,Þór Akureyri
-Vikingur R.,Víkingur Reykjavík
-Vidir,Víðir
-Volsungur,Völsungur
-Leiftur,Leiftur
-Fylkir,Fylkir Reykjavík
-Stjarnan,Stjarnan
-Keflavik,Keflavík
-Grindavik,Grindavík
-Breidablik,Breiðablik
-Grindavík,Grindavík
-Keflavík,Keflavík
-Breiðablik,Breiðablik
-Akranes,Akranes
-Skallagrimur,Skallagrímur
-IR,ÍR
-Þór Akureyri,Þór Akureyri
-ÍBH,ÍB Hafnarfjörður
-ÍBÍ,ÍB Ísafjörður
-Þróttur Reykjavík,Þróttur Reykjavík
-Víkingur Reykjavík,Víkingur Reykjavík
-Thor Akureyri,Þór Akureyri
-Vikingur Reykjavik,Víkingur Reykjavík
-Throttur Reykjavik,Þróttur Reykjavík
+ijs,ÍBK,Keflavík
+ijs,ÍA,Akranes
+ijs,KR,KR Reykjavík
+ijs,ÍBV,Vestmannaeyjar
+ijs,Valur,Valur Reykjavík
+ijs,Fram,Fram Reykjavík
+ijs,ÍBA,ÍBA Akureyri
+ijs,Víkingur,Víkingur Reykjavík
+ijs,Víkingur R.,Víkingur Reykjavík
+ijs,UBK,Breiðablik
+ijs,FH,Hafnarfjörður
+ijs,Þróttur,Þróttur Reykjavík
+ijs,Þróttur R.,Þróttur Reykjavík
+ijs,Þór,Þór Akureyri
+ijs,Þór A.,Þór Akureyri
+ijs,KA,KA Akureyri
+ijs,Haukar,Haukar
+ijs,Vikingur,Víkingur Reykjavík
+ijs,IBV,Vestmannaeyjar
+ijs,IA,Akranes
+ijs,IBI,ÍB Ísafjörður
+ijs,IBK,Keflavík
+ijs,Thor,Þór Akureyri
+ijs,Throttur,Þróttur Reykjavík
+ijs,Throttur R.,Þróttur Reykjavík
+ijs,Thor A.,Þór Akureyri
+ijs,Vikingur R.,Víkingur Reykjavík
+ijs,Vidir,Víðir
+ijs,Volsungur,Völsungur
+ijs,Leiftur,Leiftur
+ijs,Fylkir,Fylkir Reykjavík
+ijs,Stjarnan,Stjarnan
+ijs,Keflavik,Keflavík
+ijs,Grindavik,Grindavík
+ijs,Breidablik,Breiðablik
+ijs,Grindavík,Grindavík
+ijs,Keflavík,Keflavík
+ijs,Breiðablik,Breiðablik
+ijs,Akranes,Akranes
+ijs,Skallagrimur,Skallagrímur
+ijs,IR,ÍR
+ijs,Þór Akureyri,Þór Akureyri
+ijs,ÍBH,ÍB Hafnarfjörður
+ijs,ÍBÍ,ÍB Ísafjörður
+ijs,Þróttur Reykjavík,Þróttur Reykjavík
+ijs,Víkingur Reykjavík,Víkingur Reykjavík
+ijs,Thor Akureyri,Þór Akureyri
+ijs,Vikingur Reykjavik,Víkingur Reykjavík
+ijs,Throttur Reykjavik,Þróttur Reykjavík
+tur,Fenerbahçe SK Istanbul,Fenerbahçe
+tur,Besiktas JK Istanbul,Beşiktaş
+tur,Trabzonspor K,Trabzonspor
+tur,Ankaragücü SK,Ankaragücü
+tur,Galatasaray SK Istanbul,Galatasaray
+tur,Sakaryaspor K Adapazari,Sakaryaspor
+tur,Kocaelispor K Izmit,Kocaelispor
+tur,Sariyer GK Istanbul,Sarıyer
+tur,Orduspor K,Orduspor
+tur,Eskisehirspor K,Eskişehirspor
+tur,Gençlerbirligi SK Ankara,Gençlerbirliği
+tur,Zonguldakspor K,Zonguldakspor
+tur,Bursaspor K,Bursaspor
+tur,Malatyaspor K,Malatyaspor
+tur,Altay GK Izmir,Altay
+tur,Denizlispor K,Denizlispor
+tur,Antalyaspor K,Antalyaspor
+tur,Boluspor K,Boluspor
+tur,Samsunspor K,Samsunspor
+tur,Rizespor K,Çaykur Rizespor
+tur,Kayserispor K,Kayserispor
+tur,Diyarbakirspor K,Diyarbakırspor
+tur,Karsiyaka SK Izmir,Karşıyaka
+tur,Demirspor K Adana,Adana Demirspor
+tur,Konyaspor K,Konyaspor
+tur,Adanaspor K,Adanaspor
+tur,Kahraman Marasspor K,Kahramanmaraşspor
+tur,Zeytinburnu SK Istanbul,Zeytinburnuspor

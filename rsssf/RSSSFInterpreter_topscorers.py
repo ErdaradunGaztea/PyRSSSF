@@ -1,6 +1,6 @@
 import re
 
-from entities.Teams import team_dictionary
+from entities.teams import TeamDictionary
 from entities.Topscorers import TopscorerTable, Topscorer
 
 
@@ -24,7 +24,7 @@ def read_topscorer_format_1(line, current_goals, default_country):
     team_re = re.search(r'\s+\[([\w\s]+)\]', line)
     if not team_re:
         return None, current_goals
-    team = team_dictionary.get(team_re.group(1).strip())
+    team = TeamDictionary.get(team_re.group(1).strip())
 
     # extract player name (and nationality, if present)
     player_line = line[goalscore_re.end():team_re.start()] if goalscore_re else line[:team_re.start()]
@@ -47,7 +47,7 @@ def read_topscorer_format_2(line, current_goals, default_country):
     team_re = re.search(r'\s+\(([\w\s]+)\)', line)
     if not team_re:
         return None, current_goals
-    team = team_dictionary.get(team_re.group(1).strip())
+    team = TeamDictionary.get(team_re.group(1).strip())
 
     # extract player name (and nationality, if present)
     player_line = line[goalscore_re.end():team_re.start()] if goalscore_re else line[:team_re.start()]
@@ -59,6 +59,9 @@ def read_topscorers(f, line):
     # look for topscorers header
     while line is not None and not re.search(r'top\s?scorers', line.lower()):
         line = next(f, None)
+
+    if line is None:
+        return None
 
     # first detect topscorer format
     line = next(f, None)

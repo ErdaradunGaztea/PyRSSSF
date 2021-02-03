@@ -1,17 +1,9 @@
-from rsssf.RSSSFInterpreter import interpret
-from Spider import run_spider
+from interpreters import PageInterpreter
 
-import os.path
+# TODO: predict h1 headers by this condition:
+#  if a non-empty line is preceded and succeeded by at least one empty line, then it might be a h1 header
+# TODO: predict match description type: either TeamA 0-0 TeamB or TeamA - TeamB 0-0
 
 
-# TODO allow starting after certain header (like '2nd Division')
-def main(country, year):
-    # will download data only if isn't already downloaded
-    if not os.path.isfile("{0}_{1}.txt".format(country, year)):
-        run_spider(country, year)
-    t, m, s = interpret("{0}_{1}.txt".format(country, year))
-    t.to_wiki("{0}_{1}.wiki.txt".format(country, year))
-    m.to_wiki("{0}_{1}.wiki.txt".format(country, year))
-    if s:
-        s.to_wiki("{0}_{1}.wiki.txt".format(country, year))
-    return t, m, s
+# example call
+PageInterpreter("tur", 1989, "final table").table().run()

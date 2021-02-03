@@ -1,11 +1,11 @@
-from entities.Teams import team_dictionary
+from entities.teams import TeamDictionary
 
 
 class Match:
     def __init__(self, home, away, goals_h, goals_a):
-        self.home = team_dictionary.get(home)
+        self.home = TeamDictionary.get(home)
         if self.home is not None:
-            self.away = team_dictionary.get(away)
+            self.away = TeamDictionary.get(away)
         self.goals_h = goals_h
         self.goals_a = goals_a
         self.note = None

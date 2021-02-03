@@ -1,7 +1,8 @@
+import os
+import re
+
 import scrapy
 from scrapy.crawler import CrawlerProcess
-
-import re
 
 
 class RSSSFSpider(scrapy.Spider):
@@ -21,18 +22,20 @@ class RSSSFSpider(scrapy.Spider):
     def parse(self, response):
         with open("temp", "w", encoding='utf-8') as text_file:
             text_file.write(response.css('body > pre::text').get())
+
         with open("{0}_{1}.txt".format(self.country, self.year), "w", encoding='utf-8') as text_file:
             with open("temp", "r", encoding='utf-8') as f:
                 text_file.write(response.url + "\n")
                 for count, line in enumerate(f):
                     if count % 2 == 0:
-                        # TODO: replace tabs with spaces (tab size is equal to 8)
+                        # replaces tabs with spaces (tab size is equal to 8)
                         tab = re.search(r'\t', line)
                         while tab:
                             tab_length = 8 - tab.start() % 8
                             line = line[:tab.start()] + ' ' * tab_length + line[tab.end():]
                             tab = re.search(r'\t', line)
                         text_file.write(line)
+        os.remove("temp")
 
 
 def run_spider(country, year):
@@ -40,4 +43,4 @@ def run_spider(country, year):
     process.crawl(RSSSFSpider, country=country, year=year)
     process.start()
 
-# scrapy runspider Spider.py
+# scrapy runspider spider.py

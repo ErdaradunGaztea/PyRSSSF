@@ -1,6 +1,6 @@
 import re
 
-from HeaderDetector import HeaderDetector
+from interpreters.header_detector import HeaderDetector
 from entities.Match import MatchTable, Match
 
 

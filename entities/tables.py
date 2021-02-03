@@ -1,54 +1,5 @@
-import csv
-
 from entities.Competitions import competition_dictionary, CompetitionInstance, Relegation, Promotion
-
-
-class Team:
-    def __init__(self, fb):
-        self.fb = fb
-
-
-class TeamDictionary:
-    def __init__(self):
-        self.teams = dict()
-
-    def get(self, team):
-        # TODO maybe write separate teams.csv for each country? there's overlap between e.g. Faroes and Iceland,
-        #  for example Vikingur; or add country as additional parameter
-        while not self.teams.__contains__(team):
-            decision = input('Missing entry for {0}.\n'
-                             'Type "1" to associate with other entry.\n'
-                             'Type "2" to provide new fb name.\n'
-                             'Type "3" to assign temporary fb name (use for entries with typos).\n'
-                             'Type "0" to skip this line.'.format(team))
-            if decision == '1':
-                key = input('Provide key of the other entry to associate with.')
-                if self.teams.__contains__(key):
-                    self.teams.__setitem__(team, self.teams.get(key))
-                    with open("teams.csv", 'a+', encoding='utf-8') as f:
-                        f.write("{0},{1}\n".format(team, self.teams.get(key).fb))
-                else:
-                    print('Key doesn\'t exist!')
-            elif decision == '2':
-                fb_name = input('Provide fb name for new team.')
-                self.teams.__setitem__(team, Team(fb_name))
-                with open("teams.csv", 'a+', encoding='utf-8') as f:
-                    f.write("{0},{1}\n".format(team, fb_name))
-            elif decision == '3':
-                fb_name = input('Provide fb name for this entry.')
-                self.teams.__setitem__(team, Team(fb_name))
-            elif decision == '0':
-                return None
-        return self.teams.get(team)
-
-
-team_dictionary = TeamDictionary()
-d = dict()
-with open("teams.csv", 'r', encoding='utf-8') as f:
-    reader = csv.reader(f)
-    for line in reader:
-        d[line[0]] = Team(line[1])
-team_dictionary.teams = d
+from entities.teams import TeamDictionary
 
 
 class Table:
@@ -57,6 +8,7 @@ class Table:
         self.ppw = points_per_win
         self.standings = dict()
         self.competitions = dict()
+        self.three_letter_code = None
 
     def add_row(self, position, team, wins, draws, losses, goals_scored, goals_conceded):
         self.standings.__setitem__(position,
@@ -94,7 +46,8 @@ class Table:
         self.add_league_change(False)
 
     def add_league_change(self, down=True):
-        league = input("Provide league to {0} to. Leave empty if none to add.".format("relegate" if down else "promote"))
+        league = input(
+            "Provide league to {0} to. Leave empty if none to add.".format("relegate" if down else "promote"))
         if league:
             season = input('Provide season. Leave empty if not applicable.')
             # notes are disabled by default, for they are unnecessary
@@ -105,7 +58,77 @@ class Table:
             for pos in positions:
                 self.competitions.__setitem__(int(pos.strip()), event)
 
-    def to_wiki(self, filename):
+    def to_wiki_infobox(self, filename):
+        with open(filename, 'a+', encoding='utf-8') as f:
+            self.three_letter_code = input('Provide three-letter country/map code.')
+
+            num_matches = int(sum([int(row.wins) + int(row.draws) + int(row.losses) for row in self.standings.values()]) / 2)
+            num_goals = sum([int(row.gf) for row in self.standings.values()])
+
+            f.write("""{{{{Rozgrywki w piłce nożnej infobox
+ |nazwa rozgrywek = 
+ |rok             = 
+ |inna nazwa      = 
+ |logo            = 
+ |rozgrywki-1     = 
+ |rozgrywki+1     = 
+ |termin          = 
+ |państwo         = {0}
+ |liczba meczów   = {1}
+ |liczba zespołów = {2}
+ |stadiony        = 
+ |liczba miast    = 
+ |najwięcej       = 
+ |mecz-max        = 
+ |najmniej        = 
+ |mecz-min        = 
+ |bramki          = {3}
+ |król strzelców  = 
+ |liczba goli     = 
+ |drużyna         = 
+ |mistrz          = {{{{Fb team {4}}}}}
+ |kraj            = 
+ |kraj w dop      = 
+ |aktualizacja    = 
+}}}}\n\n""".format(
+                    self.three_letter_code,
+                    num_matches,
+                    self.standings.__len__(),
+                    num_goals,
+                    self.standings[1].team.fb
+                ))
+
+    def to_wiki_teams(self, filename):
+        with open(filename, 'a+', encoding='utf-8') as f:
+            f.write("== Drużyny ==\n")
+
+            # map of teams
+            map_league = input('Provide league name and season.')
+            f.write("{{{{Fb map|nt={2}|width=250|map={0}|label=Lokalizacja klubów grających w {1}\n".format(
+                self.three_letter_code,
+                map_league,
+                self.standings.__len__()
+            ))
+            for index, row in enumerate(self.standings.values()):
+                f.write("|{0}={1}\n".format(
+                    index + 1,
+                    row.team.fb
+                ))
+            f.write("}}\n\n")
+
+            # last season table
+            f.write("{{Fb uczestnicy nagłówek\n")
+            f.write("|tytuł       = {0}\n".format(map_league))
+            f.write("|uczestnicy1 = poprzedniej edycji\n")
+            f.write("}}\n")
+            for row in self.standings.values():
+                f.write("{{{{Fb uczestnicy drużyna |t={0:<25}|miejsce=1}}}}\n".format(
+                    row.team.fb
+                ))
+            f.write("{{Fb uczestnicy awans   |nagłówek=niższej ligi}}\n")
+            f.write("{{Fb uczestnicy stopka}}\n\n")
+
+    def to_wiki_table(self, filename):
         with open(filename, 'a+', encoding='utf-8') as f:
             notes = []
 
@@ -126,7 +149,8 @@ class Table:
                     "2pts " if self.ppw == 2 else "",
                     position,
                     self.standings.get(position).to_wiki(color=not self.competitions.get(position)),
-                    "|bc={0}".format(self.competitions.get(position).get_color()) if self.competitions.get(position) else "",
+                    "|bc={0}".format(self.competitions.get(position).get_color()) if self.competitions.get(
+                        position) else "",
                     "|pn={0}".format(len(notes)) if self.standings.get(position).points_deducted[1] else "",
                     "||rowspan={0}|".format(rowspan) if rowspan > 0 else ""
                 ))
@@ -153,11 +177,16 @@ class Table:
                     wiki_notes += "<sup>{0}</sup>{1}".format(index + 1, note)
             f.write("{{{{Fb cl footer |s=[{0}] {{{{lang|en}}}} {1}}}}}\n\n".format(self.source, wiki_notes))
 
+    def to_wiki(self, filename):
+        self.to_wiki_infobox(filename)
+        self.to_wiki_teams(filename)
+        self.to_wiki_table(filename)
+
 
 class TableRow:
     def __init__(self, position, team, wins, draws, losses, goals_scored, goals_conceded):
         self.position = position
-        self.team = team_dictionary.get(team)
+        self.team = TeamDictionary.get(team)
         self.wins = wins
         self.draws = draws
         self.losses = losses
