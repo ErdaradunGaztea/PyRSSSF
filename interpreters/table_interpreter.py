@@ -1,4 +1,4 @@
-from entities.teams import Table
+from entities.tables import Table
 from interpreters.table_formats import detect_table_format
 
 
@@ -13,6 +13,7 @@ class TableInterpreter:
         self.table = Table(source, points_per_win)
 
         # first strip all empty lines
+        # TODO: preferably use next(f, None) instead to avoid endless loop when no format detected
         line = next(f, '')
         table_format_func = detect_table_format(line)
         while not table_format_func:
