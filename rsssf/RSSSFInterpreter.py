@@ -1,4 +1,3 @@
-from rsssf.RSSSFInterpreter_matches import read_matches
 from rsssf.RSSSFInterpreter_topscorers import read_topscorers
 
 

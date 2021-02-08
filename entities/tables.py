@@ -1,4 +1,4 @@
-from entities.Competitions import competition_dictionary, CompetitionInstance, Relegation, Promotion
+from entities.competitions import CompetitionInstance, Relegation, Promotion, CompetitionDictionary
 from entities.teams import TeamDictionary
 
 
@@ -23,7 +23,7 @@ class Table:
             if not key:
                 finished = True
             else:
-                c = CompetitionInstance(competition_dictionary.get(key))
+                c = CompetitionInstance(CompetitionDictionary.get(key))
                 c_season = input('Provide season. Leave empty if not applicable.')
                 if c_season:
                     c.season = c_season

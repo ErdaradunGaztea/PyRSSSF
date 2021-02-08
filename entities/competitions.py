@@ -27,27 +27,22 @@ class CompetitionInstance:
 
 
 class CompetitionDictionary:
-    def __init__(self):
-        self.competitions = dict()
+    competitions = dict()
+    with open("competitions.csv", 'r', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        for line in reader:
+            competitions[line[0]] = Competition(line[1], line[2])
 
-    def get(self, competition):
-        while not self.competitions.__contains__(competition):
+    @staticmethod
+    def get(competition):
+        while not CompetitionDictionary.competitions.__contains__(competition):
             c_name = input('Missing entry. You have to create new competition. Provide competition name.')
             c_color = input('Provide color. Leave empty if not applicable.')
             c = Competition(c_name, c_color)
-            self.competitions.__setitem__(competition, c)
+            CompetitionDictionary.competitions.__setitem__(competition, c)
             with open("competitions.csv", 'a+', encoding='utf-8') as f:
                 f.write("{0},{1},{2}\n".format(competition, c_name, c_color))
-        return self.competitions.get(competition)
-
-
-competition_dictionary = CompetitionDictionary()
-d = dict()
-with open("competitions.csv", 'r', encoding='utf-8') as f:
-    reader = csv.reader(f)
-    for line in reader:
-        d[line[0]] = Competition(line[1], line[2])
-competition_dictionary.competitions = d
+        return CompetitionDictionary.competitions.get(competition)
 
 
 class LeagueChange:
@@ -72,7 +67,7 @@ class Relegation(LeagueChange):
     def get_color(self):
         return "#FFCCCC"
 
-    def to_wiki(self, rows, num_note):
+    def to_wiki(self, rows, num_note, event_type):
         return super().to_wiki(rows, num_note, "relegation")
 
 

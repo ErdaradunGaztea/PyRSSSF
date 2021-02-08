@@ -1,1 +1,3 @@
 from interpreters.page_interpreter import PageInterpreter
+from interpreters.match_interpreter import MatchInterpreter
+from interpreters.topscorer_interpreter import TopscorerInterpreter

@@ -2,7 +2,9 @@ import os.path
 
 from crawling import run_spider
 from entities.teams import TeamDictionary
+from interpreters.match_interpreter import MatchInterpreter
 from interpreters.table_interpreter import TableInterpreter
+from interpreters.topscorer_interpreter import TopscorerInterpreter
 
 
 class PageInterpreter:
@@ -18,13 +20,13 @@ class PageInterpreter:
         self.interpreters.append(TableInterpreter())
         return self
 
-    # def matches(self):
-    #     self.interpreters.append(MatchInterpreter())
-    #     return self
-    #
-    # def topscorers(self):
-    #     self.interpreters.append(TopscorerInterpreter())
-    #     return self
+    def matches(self):
+        self.interpreters.append(MatchInterpreter())
+        return self
+
+    def topscorers(self):
+        self.interpreters.append(TopscorerInterpreter())
+        return self
 
     def run(self):
         TeamDictionary.country = self.country

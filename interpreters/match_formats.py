@@ -1,20 +1,24 @@
 import re
 
-from interpreters.header_detector import HeaderDetector
-from entities.Match import MatchTable, Match
+from entities.match import Match
 
 
-def detect_match_format(line):
-    if re.match(r'[\w\s]+\s+-\s+[\w\s]+\s+[0-9]+:[0-9]+\s+\([0-9]+:[0-9]+\)', line):
-        print("Detected match format no. 3.")
-        return 3
-    elif re.match(r'[^-]+\s+[\w\s]+\s+-\s+[\w\s]+\s+[0-9]+-[0-9]+', line):
-        print("Detected match format no. 2.")
-        return 2
-    elif re.match(r'[\w\s]+\s+[0-9]+-[0-9]+\s+[\w\s]+', line):
-        print("Detected match format no. 1.")
-        return 1
-    return None
+def match_match_format_1(line):
+    return re.match(
+        r'[\w\s]+\s+[0-9]+-[0-9]+\s+[\w\s]+',
+        line)
+
+
+def match_match_format_2(line):
+    return re.match(
+        r'[^-]+\s+[\w\s]+\s+-\s+[\w\s]+\s+[0-9]+-[0-9]+',
+        line)
+
+
+def match_match_format_3(line):
+    return re.match(
+        r'[\w\s]+\s+-\s+[\w\s]+\s+[0-9]+:[0-9]+\s+\([0-9]+:[0-9]+\)',
+        line)
 
 
 def read_match_format_1(line, notes, match_length, note_prompt):
@@ -129,54 +133,15 @@ def read_match_format_3(line, notes, match_length, note_prompt):
     return match, match_length
 
 
-def read_matches(f, source):
-    # create match matrix
-    print("### Creating match matrix...")
-    matches = MatchTable(source)
-    # declare match length variable to apply condition to later
-    match_length = None
-
-    note_prompt = "Note detected for a match: {0} {1}:{2} {3}.\n" \
-                  "Input text to append a note to this match.\n" \
-                  "Input single number to link this match with previous note.\n" \
-                  "Leave empty if no note necessary."
-    notes = dict()
-
-    # first detect match format
-    next_line = next(f, None)
-    match_format = detect_match_format(next_line)
-    while not match_format:
-        next_line = next(f, None)
-        match_format = detect_match_format(next_line)
-
-    stop = False
-    line = ""
-    while not stop and next_line is not None:
-        while not HeaderDetector.header:
-            line = next_line
-
-            match = None
-            if match_format == 1:
-                match, match_length = read_match_format_1(line, notes, match_length, note_prompt)
-            elif match_format == 2:
-                match, match_length = read_match_format_2(line, notes, match_length, note_prompt)
-            elif match_format == 3:
-                match, match_length = read_match_format_3(line, notes, match_length, note_prompt)
-
-            if match:
-                matches.add_match(match)
-                # if match detected, it's definitely not a header
-                HeaderDetector.clear()
-
-            next_line = next(f, None)
-            if next_line is None:
-                return matches
-            HeaderDetector.detect(next_line)
-        stop = input('Header detected: "{0}". Type "y" to continue scraping. '
-                     'Leave empty otherwise.'.format(line)) != 'y'
-
-        next_line = next(f, None)
-        if next_line is None:
-            return matches
-        HeaderDetector.detect(next_line)
-    return matches, line
+def detect_match_format(line):
+    if line is not None:
+        if match_match_format_3(line):
+            print("Detected match format no. 3.")
+            return read_match_format_3
+        if match_match_format_2(line):
+            print("Detected match format no. 2.")
+            return read_match_format_2
+        if match_match_format_1(line):
+            print("Detected match format no. 1.")
+            return read_match_format_1
+    return None

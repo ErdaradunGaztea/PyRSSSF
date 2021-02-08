@@ -27,7 +27,7 @@ def match_table_format_2(line):
      1.Besiktas JK Istanbul        30  20  9  1  63-24  69
     """
     return re.match(
-        r'\s*[0-9]+\.\s*[\D]+\s+[0-9]+\s+[0-9]+\s+[0-9]+\s+[0-9]+\s+[0-9]+-[0-9]+\s+[0-9]+\s*[\w\s]*',
+        r'\s*[0-9]+\.\s*[\D]+\s+[0-9]+\s+[0-9]+\s+[0-9]+\s+[0-9]+\s+[0-9]+\s*-\s*[0-9]+\s+[0-9]+\s*[\w\s]*',
         line)
 
 
@@ -64,7 +64,7 @@ def read_table_format_2(f, line, table):
             line = line[position_re.end():]
             # find matches, goals and points data
             data = re.search(
-                r'([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)-([0-9]+)\s+([0-9]+)\s+([\w\s]*)',
+                r'([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s*-\s*([0-9]+)\s+([0-9]+)\s+([\w\s]*)',
                 line)
             # extract team name and remove additional info in parentheses ()
             team = re.sub(r'\([^)]+\)', '', line[:data.start()]).strip()
@@ -77,10 +77,11 @@ def read_table_format_2(f, line, table):
 
 
 def detect_table_format(line):
-    if match_table_format_1(line):
-        print("Detected table format no. 1.")
-        return read_table_format_1
-    elif match_table_format_2(line):
-        print("Detected table format no. 2.")
-        return read_table_format_2
+    if line is not None:
+        if match_table_format_1(line):
+            print("Detected table format no. 1.")
+            return read_table_format_1
+        elif match_table_format_2(line):
+            print("Detected table format no. 2.")
+            return read_table_format_2
     return None
