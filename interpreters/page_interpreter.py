@@ -2,6 +2,7 @@ import os.path
 
 from crawling import run_spider
 from entities.teams import TeamDictionary
+from interpreters.header_detector import HeaderDetector
 from interpreters.match_interpreter import MatchInterpreter
 from interpreters.table_interpreter import TableInterpreter
 from interpreters.topscorer_interpreter import TopscorerInterpreter
@@ -56,4 +57,5 @@ class PageInterpreter:
         for result in self.results:
             result.to_wiki(wiki_file)
 
+        HeaderDetector.clear()
         return self.results

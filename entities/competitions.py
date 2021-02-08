@@ -67,7 +67,7 @@ class Relegation(LeagueChange):
     def get_color(self):
         return "#FFCCCC"
 
-    def to_wiki(self, rows, num_note, event_type):
+    def to_wiki(self, rows, num_note):
         return super().to_wiki(rows, num_note, "relegation")
 
 
