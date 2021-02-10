@@ -9,13 +9,17 @@ from interpreters.topscorer_interpreter import TopscorerInterpreter
 
 
 class PageInterpreter:
-    def __init__(self, country, year, header=None):
+    def __init__(self, country, year):
         self.country = country
         self.year = year
-        self.header = "" if header is None else header.lower()
+        self.headers = []
         self.interpreters = []
         # TODO: or maybe a dictionary? or a dedicated object that takes wiki section order into consideration?
         self.results = []
+
+    def header(self, header: str):
+        self.headers.append(header.lower())
+        return self
 
     def table(self):
         self.interpreters.append(TableInterpreter())
@@ -42,10 +46,11 @@ class PageInterpreter:
             # read first line with source
             source = next(f, None).strip()
 
-            # find header
-            line = next(f, None)
-            while line is not None and not line.lower().__contains__(self.header):
+            # find all headers
+            for header in self.headers:
                 line = next(f, None)
+                while line is not None and not line.lower().__contains__(header):
+                    line = next(f, None)
 
             line = next(f, None)
             for interpreter in self.interpreters:
