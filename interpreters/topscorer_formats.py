@@ -11,8 +11,12 @@ def match_topscorer_format_1(line):
 
 
 def match_topscorer_format_2(line):
+    """
+    Example line:
+    18 - Hjörtur Hjartarson [Skallagrímur]
+    """
     return re.match(
-        r'\s*[0-9]+\s*-?[\w\s]+\([\w\s]+\)',
+        r'\s*[0-9]+\s*-?[\w\s]+[(\[][\w\s]+[)\]]',
         line)
 
 
@@ -54,7 +58,7 @@ def read_topscorer_format_2(line, current_goals, default_country):
         current_goals = goalscore_re.group(1).strip()
 
     # read player team
-    team_re = re.search(r'\s+\(([\w\s]+)\)', line)
+    team_re = re.search(r'\s+[(\[]([\w\s]+)[)\]]', line)
     if not team_re:
         return None, current_goals
     team = TeamDictionary.get(team_re.group(1).strip())

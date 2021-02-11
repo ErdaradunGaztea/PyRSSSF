@@ -6,4 +6,4 @@ from interpreters import PageInterpreter
 # TODO: replace default topscorer nationality with "missing" flag from Wikipedia
 
 # example call
-PageInterpreter("tur", 1989).header("final table").table().run()
+PageInterpreter("ijs", 1999).header("second level").table().matches().topscorers().run()
