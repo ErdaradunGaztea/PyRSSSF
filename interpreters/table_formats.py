@@ -23,11 +23,12 @@ def match_table_format_1(line):
 
 def match_table_format_2(line):
     """
-    Example line:
+    Example lines:
      1.Besiktas JK Istanbul        30  20  9  1  63-24  69
+     1. Þróttur R.           18 12  4  2   40:21     40
     """
     return re.match(
-        r'\s*[0-9]+\.\s*[\D]+\s+[0-9]+\s+[0-9]+\s+[0-9]+\s+[0-9]+\s+[0-9]+\s*-\s*[0-9]+\s+[0-9]+\s*[\w\s]*',
+        r'\s*[0-9]+\.\s*[\D]+\s+[0-9]+\s+[0-9]+\s+[0-9]+\s+[0-9]+\s+[0-9]+\s*[-:]\s*[0-9]+\s+[0-9]+\s*[\w\s]*',
         line)
 
 
@@ -64,7 +65,7 @@ def read_table_format_2(f, line, table):
             line = line[position_re.end():]
             # find matches, goals and points data
             data = re.search(
-                r'([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s*-\s*([0-9]+)\s+([0-9]+)\s+([\w\s]*)',
+                r'([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s*[-:]\s*([0-9]+)\s+([0-9]+)\s+([\w\s]*)',
                 line)
             # extract team name and remove additional info in parentheses ()
             team = re.sub(r'\([^)]+\)', '', line[:data.start()]).strip()
